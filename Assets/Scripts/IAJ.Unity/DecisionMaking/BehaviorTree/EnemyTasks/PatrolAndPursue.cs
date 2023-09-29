@@ -25,6 +25,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
 
         public float range;
 
+        public List<Orc> orcs = new List<Orc>();
+
 
         public PatrolAndPursue(Orc monster, GameObject character, Vector3 position1, Vector3 position2, float _range)
         {
@@ -34,8 +36,16 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
             this.myMonster = monster;
             this.inChase = false;
             range = _range;
+            this.SetOrcs();
         }
 
+
+        private void SetOrcs(){
+            foreach(var orc in GameObject.FindObjectsOfType(typeof(Orc)))
+            {
+                this.orcs.Add((Orc)orc);
+            }
+        }
         public override Result Run()
         {
 
@@ -43,12 +53,22 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
             var playerPosition = this.Character.transform.position;
             var orcPosition = this.myMonster.transform.position;
 
+
             // Check if i am near player
 
             if (Vector3.Distance(orcPosition, playerPosition) <= 20f)
            
             {
                 this.myMonster.currentTarget = playerPosition;
+                
+                if (!inChase)
+                {
+                    this.myMonster.shout.PlayOneShot((AudioClip)Resources.Load("OrcShout2sec"));
+                    foreach(var orc in this.orcs)
+                    {
+
+                    }
+                }
                 this.inChase = true;
 
                 if (Vector3.Distance(orcPosition, playerPosition) <= 5f)
@@ -74,6 +94,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
                 if (inChase) {
                     this.myMonster.currentTarget = this.Position1;
                     this.inChase = false;
+
                 }
 
               

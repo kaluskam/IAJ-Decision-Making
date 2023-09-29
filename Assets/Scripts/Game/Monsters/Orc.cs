@@ -17,6 +17,8 @@ namespace Assets.Scripts.Game.NPCs
         //New variables
         public Vector3 PatrolPoint1 { get; set; }
         public Vector3 PatrolPoint2 { get; set; }
+
+        public AudioSource shout {  get; set; }
         public Orc()
         {
             this.enemyStats.Type = "Orc";
@@ -27,6 +29,7 @@ namespace Assets.Scripts.Game.NPCs
             this.enemyStats.SimpleDamage = 6;
             this.enemyStats.AwakeDistance = 15;
             this.enemyStats.WeaponRange = 3;
+            
             
            
         }
@@ -48,6 +51,8 @@ namespace Assets.Scripts.Game.NPCs
 
             }
 
+            this.shout = gameObject.AddComponent<AudioSource>();
+            
             var position1 = closest.transform.GetChild(0).position;
             var position2 = closest.transform.GetChild(1).position;
             this.PatrolPoint1 = position1;
