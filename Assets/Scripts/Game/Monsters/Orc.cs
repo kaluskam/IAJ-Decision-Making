@@ -19,6 +19,9 @@ namespace Assets.Scripts.Game.NPCs
         public Vector3 PatrolPoint2 { get; set; }
 
         public AudioSource shout {  get; set; }
+        public bool inShoutChase { get; set; }
+
+        public bool inChase { get; set; }
         public Orc()
         {
             this.enemyStats.Type = "Orc";
@@ -29,9 +32,8 @@ namespace Assets.Scripts.Game.NPCs
             this.enemyStats.SimpleDamage = 6;
             this.enemyStats.AwakeDistance = 15;
             this.enemyStats.WeaponRange = 3;
-            
-            
-           
+            this.inShoutChase = false;
+            this.inChase = false;  
         }
 
         public override void InitializeBehaviourTree()
