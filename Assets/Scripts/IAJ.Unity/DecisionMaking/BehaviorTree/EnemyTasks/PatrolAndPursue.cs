@@ -20,6 +20,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
 
         public Orc myMonster { get; set; }
 
+        // Parameter for resetting to patrol after a chase
         public bool inChase { get; set; }
 
         public float range;
@@ -43,17 +44,23 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
             var orcPosition = this.myMonster.transform.position;
 
             // Check if i am near player
-            //this.myMonster.currentTarget = playerPosition;
+
             if (Vector3.Distance(orcPosition, playerPosition) <= 20f)
            
             {
                 this.myMonster.currentTarget = playerPosition;
                 this.inChase = true;
 
+                if (Vector3.Distance(orcPosition, playerPosition) <= 5f)
+                { 
+                return Result.Success;
+                }
+
 
             }
             else //Need to choose the patrol point
-            {
+            {   
+
                 if (Vector3.Distance(orcPosition, Position1) <= range)
                 {
                     this.myMonster.currentTarget = this.Position2;
@@ -63,6 +70,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
                     this.myMonster.currentTarget = this.Position1;
                 }
 
+                //Resetting after a chase
                 if (inChase) {
                     this.myMonster.currentTarget = this.Position1;
                     this.inChase = false;
@@ -75,8 +83,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
 
 
             myMonster.StartPathfinding(myMonster.currentTarget);
-
-     
             return Result.Running;
 
         }
