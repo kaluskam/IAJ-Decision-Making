@@ -4,12 +4,14 @@ using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActions
 {
-    public class ShieldOfFaith : WalkToTargetAndExecuteAction
+    public class ShieldOfFaith : Action
     {
 
         private float ShieldHPChange;
-        public ShieldOfFaith(AutonomousCharacter character, GameObject target) : base("DivineSmite", character, target)
+        private AutonomousCharacter Character;
+        public ShieldOfFaith(AutonomousCharacter character) : base("DivineSmite")
         {
+            this.Character = character;
             this.ShieldHPChange = 5 - Character.baseStats.ShieldHP;
         }
 
