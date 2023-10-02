@@ -6,8 +6,22 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 {
     public class DivineSmite : WalkToTargetAndExecuteAction
     {
+        private float expectedXPChange;
+
         public DivineSmite(AutonomousCharacter character, GameObject target) : base("DivineSmite", character, target)
         {
+            if(target.tag.Equals("Skeleton"))
+            {
+                this.expectedXPChange = 2.7f;
+            }
+            else if (target.tag.Equals("Orc"))
+            {
+                this.expectedXPChange = 7.0f;
+            }
+            else if (target.tag.Equals("Dragon"))
+            {
+                this.expectedXPChange = 10.0f;
+            }
         }
 
         public override bool CanExecute()
@@ -37,30 +51,27 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
             if (goal.Name == AutonomousCharacter.GAIN_LEVEL_GOAL)
             {
-                change -= goal.InsistenceValue;
+                change -= this.expectedXPChange;
             }
-
 
             return change;
         }
 
         public override void ApplyActionEffects(WorldModel worldModel)
         {
-            base.ApplyActionEffects(worldModel);
-            var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
-            worldModel.SetProperty(Properties.HP, maxHP);
-            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, 0.0f);
+        //    base.ApplyActionEffects(worldModel);
+        //    var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
+        //    worldModel.SetProperty(Properties.HP, maxHP);
+        //    worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, 0.0f);
 
-            //disables the target object so that it can't be reused again
-            worldModel.SetProperty(this.Target.name, false);
+        //    //disables the target object so that it can't be reused again
+        //    worldModel.SetProperty(this.Target.name, false);
         }
 
         public override float GetHValue(WorldModel worldModel)
         {
-            var currentHP = (int)worldModel.GetProperty(Properties.HP);
-            var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
-
-            return (currentHP / maxHP) + base.GetHValue(worldModel);
+            //TODO
+            return 0;
         }
     }
 }
