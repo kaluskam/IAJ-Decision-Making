@@ -55,8 +55,40 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             var bestValue = float.PositiveInfinity;
             var secondBestValue = float.PositiveInfinity;
             var thirdBestValue = float.PositiveInfinity;
+            ActionDiscontentment.Clear();
 
             //TODO implement                
+            foreach (var action in actions) 
+            {
+                if (action.CanExecute()) {
+                    var value = CalculateDiscontentment(action, goals);
+                    ActionDiscontentment[action] = value;
+                    if (value < bestValue) 
+                    {
+                        thirdBestValue = secondBestValue;
+                        thirdBestAction = secondBestAction;
+                    
+                        secondBestAction = bestAction;
+                        secondBestValue = bestValue;
+
+                        bestValue = value;
+                        bestAction = action;
+                    } else if (value < secondBestValue)
+                    {
+                        thirdBestValue = secondBestValue;
+                        thirdBestAction = secondBestAction;
+
+                        secondBestAction = action;
+                        secondBestValue = value;
+                    } else if (value < thirdBestValue)
+                    {
+                        thirdBestValue = value;
+                        thirdBestAction = action;
+                    }
+                }
+            }
+
+            
             
             InProgress = false;
             return bestAction;

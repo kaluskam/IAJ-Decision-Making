@@ -20,10 +20,13 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
 
         public float range;
 
+        
+
         public IsCharacterNearTarget(NPC character, GameObject target, float _range)
         {
             this.Character = character;
-            this.TargetPosition = target.transform.position;
+            this.Target = target;
+            
             range = _range;
         }
 
@@ -36,8 +39,15 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
 
         public override Result Run()
         {
+            //Dragon and skeleton fix
+            if (Target != null) 
+            {
+                this.TargetPosition = Target.transform.position;
+            }
+
             if (Vector3.Distance(Character.gameObject.transform.position, this.TargetPosition) <= range)
                 return Result.Success;
+
             else return Result.Failure;
 
         }

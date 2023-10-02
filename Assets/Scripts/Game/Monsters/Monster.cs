@@ -54,6 +54,8 @@ namespace Assets.Scripts.Game.NPCs
 
         }
 
+        public bool InWeaponRange(GameObject target)
+        { return Vector3.Distance(this.transform.position, target.transform.position) <= enemyStats.WeaponRange; }
 
         public virtual void InitializeBehaviourTree()
         {
@@ -105,4 +107,6 @@ namespace Assets.Scripts.Game.NPCs
         }      
 
      }
+
+
 }

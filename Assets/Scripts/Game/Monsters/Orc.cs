@@ -67,19 +67,6 @@ namespace Assets.Scripts.Game.NPCs
             this.BehaviourTree = new PatrolBehaviourTree(this, Target);
         }
 
-        void FixedUpdate()
-        {
-            if (GameManager.Instance.gameEnded) return;
-            if (usingBehaviourTree)
-            {
-                if (this.BehaviourTree != null)
-                    this.BehaviourTree.Run();
-                else
-                    this.BehaviourTree = new PatrolBehaviourTree(this, Target);
-            }
-
-        }
-
 
     }
 }

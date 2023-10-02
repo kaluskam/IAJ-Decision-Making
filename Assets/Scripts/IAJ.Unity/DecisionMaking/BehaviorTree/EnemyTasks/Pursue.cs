@@ -15,29 +15,22 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
     {
         protected Monster Character { get; set; }
 
-        public Vector3 Target { get; set; }
+        public GameObject Target { get; set; }
 
         public float range;
 
         public Pursue(Monster character, GameObject target, float _range)
         {
             this.Character = character;
-            this.Target = target.transform.position;
-            range = _range;
-        }
-
-        public Pursue(Monster character, Vector3 target, float _range)
-        {
-            this.Character = character;
             this.Target = target;
             range = _range;
         }
-
+    
         public override Result Run()
         {
             if (Target == null)
                 return Result.Failure;
-            var distance = Vector3.Distance(Character.transform.position, this.Target);
+            var distance = Vector3.Distance(Character.transform.position, this.Target.transform.position);
 
             if (distance <= range)
             {
@@ -49,7 +42,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
             }
             else
             {
-                Character.StartPathfinding(this.Target);
+                Character.StartPathfinding(this.Target.transform.position);
                 return Result.Running;
             }
 
