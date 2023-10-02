@@ -4,6 +4,7 @@ using Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActions;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel;
 using Assets.Scripts.Game;
 
+
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
 {
     public class DepthLimitedGOAPDecisionMaking
@@ -50,10 +51,34 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             var processedActions = 0;
 
             var startTime = Time.realtimeSinceStartup;
+            var currentValue = float.PositiveInfinity;
 
             while (this.CurrentDepth >= 0)
             {
-                //TODO implement
+                if (this.CurrentDepth >= MAX_DEPTH)
+                {
+                    currentValue = Models[CurrentDepth].CalculateDiscontentment(Goals);
+                    if (currentValue < this.BestDiscontentmentValue)
+                    {
+                        this.BestDiscontentmentValue = currentValue;
+                        this.BestAction = this.LevelAction[0];
+                        System.Array.Copy(this.LevelAction, this.BestActionSequence, MAX_DEPTH);
+                    }
+                    this.CurrentDepth--;
+                    continue;
+                }
+
+                var nextAction = Models[this.CurrentDepth].GetNextAction();
+                if (nextAction != null)
+                {
+                    Models[CurrentDepth + 1] = Models[CurrentDepth].GenerateChildWorldModel();
+                    nextAction.ApplyActionEffects(Models[CurrentDepth + 1]);
+                    this.LevelAction[CurrentDepth] = nextAction;
+                    CurrentDepth++;
+                } else
+                {
+                    CurrentDepth--;
+                }
             }
 
             this.TotalProcessingTime += Time.realtimeSinceStartup - startTime;
