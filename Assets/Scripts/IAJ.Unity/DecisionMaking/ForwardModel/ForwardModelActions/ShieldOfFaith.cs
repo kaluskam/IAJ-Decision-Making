@@ -23,11 +23,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
         public override bool CanExecute(WorldModel worldModel)
         {
-            //if (!base.CanExecute(worldModel)) return false;
-
-            //var currentHP = (int)worldModel.GetProperty(Properties.HP);
-            //var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
-            return true;
+            if (!base.CanExecute(worldModel)) return false;
+            
+            return (int)worldModel.GetProperty(Properties.MANA) >= 5;
         }
 
         public override void Execute()
@@ -50,13 +48,13 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
         public override void ApplyActionEffects(WorldModel worldModel)
         {
-            //    base.ApplyActionEffects(worldModel);
-            //    var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
-            //    worldModel.SetProperty(Properties.HP, maxHP);
-            //    worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, 0.0f);
+            base.ApplyActionEffects(worldModel);
+            var shieldHP = (int)worldModel.GetProperty(Properties.ShieldHP);
+            var shieldHPChange = 5 - shieldHP;
+            worldModel.SetProperty(Properties.ShieldHP, 5);
 
-            //    //disables the target object so that it can't be reused again
-            //    worldModel.SetProperty(this.Target.name, false);
+            var goalValue = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
+            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, goalValue - shieldHPChange);
         }
 
         public override float GetHValue(WorldModel worldModel)

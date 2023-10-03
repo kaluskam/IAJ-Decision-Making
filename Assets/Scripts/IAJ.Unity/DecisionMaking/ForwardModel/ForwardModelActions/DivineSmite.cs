@@ -7,20 +7,22 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
     public class DivineSmite : WalkToTargetAndExecuteAction
     {
         private float expectedXPChange;
+        private float XPChange = 0;
 
         public DivineSmite(AutonomousCharacter character, GameObject target) : base("DivineSmite", character, target)
         {
             if(target.tag.Equals("Skeleton"))
             {
                 this.expectedXPChange = 2.7f;
+                this.XPChange = 3;
             }
             else if (target.tag.Equals("Orc"))
             {
-                this.expectedXPChange = 7.0f;
+                this.expectedXPChange = 0;
             }
             else if (target.tag.Equals("Dragon"))
             {
-                this.expectedXPChange = 10.0f;
+                this.expectedXPChange = 0;
             }
         }
 
@@ -32,11 +34,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
         public override bool CanExecute(WorldModel worldModel)
         {
-            //if (!base.CanExecute(worldModel)) return false;
-
-            //var currentHP = (int)worldModel.GetProperty(Properties.HP);
-            //var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
-            return true;
+            if (!base.CanExecute(worldModel)) return false;
+            return (int)worldModel.GetProperty(Properties.MANA) >= 2;
         }
 
         public override void Execute()
@@ -59,13 +58,22 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
         public override void ApplyActionEffects(WorldModel worldModel)
         {
-        //    base.ApplyActionEffects(worldModel);
-        //    var maxHP = (int)worldModel.GetProperty(Properties.MAXHP);
-        //    worldModel.SetProperty(Properties.HP, maxHP);
-        //    worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, 0.0f);
+            base.ApplyActionEffects(worldModel);
+            var mana = (int)worldModel.GetProperty(Properties.MANA);
+            var xp = 0;
+            if (worldModel.GetProperty(Properties.XP) != null)
+            {
+                xp = (int)worldModel.GetProperty(Properties.XP);
+            }
 
-        //    //disables the target object so that it can't be reused again
-        //    worldModel.SetProperty(this.Target.name, false);
+            worldModel.SetProperty(Properties.MANA, mana - 2);
+            worldModel.SetProperty(Properties.XP, xp + this.XPChange);
+
+            var goalValue = worldModel.GetGoalValue(AutonomousCharacter.GAIN_LEVEL_GOAL);
+            worldModel.SetGoalValue(AutonomousCharacter.GAIN_LEVEL_GOAL, goalValue - this.XPChange);
+
+            //disables the target object so that it can't be reused again
+            worldModel.SetProperty(this.Target.name, false);
         }
 
         public override float GetHValue(WorldModel worldModel)
