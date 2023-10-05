@@ -36,6 +36,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             this.InProgress = true;
             this.TotalProcessingTime = 0.0f;
             this.TotalActionCombinationsProcessed = 0;
+            this.ActionCombinationsProcessedPerFrame = 100;
             this.CurrentDepth = 0;
             this.Models = new WorldModel[MAX_DEPTH + 1];
             this.Models[0] = this.InitialWorldModel;
@@ -51,20 +52,27 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.GOB
             var processedActions = 0;
 
             var startTime = Time.realtimeSinceStartup;
-            var currentValue = float.PositiveInfinity;
 
             while (this.CurrentDepth >= 0)
             {
+                //if (false && processedActions >= this.ActionCombinationsProcessedPerFrame)
+                //{
+                //    this.TotalProcessingTime += Time.realtimeSinceStartup - startTime;
+                //    return null;
+                //}
                 if (this.CurrentDepth >= MAX_DEPTH)
                 {
-                    currentValue = Models[CurrentDepth].CalculateDiscontentment(Goals);
+                    var currentValue = Models[CurrentDepth].CalculateDiscontentment(Goals);
                     if (currentValue < this.BestDiscontentmentValue)
                     {
                         this.BestDiscontentmentValue = currentValue;
                         this.BestAction = this.LevelAction[0];
-                        System.Array.Copy(this.LevelAction, this.BestActionSequence, MAX_DEPTH);
+                        this.BestActionSequence = this.LevelAction;
+                        //System.Array.Copy(this.LevelAction, this.BestActionSequence, MAX_DEPTH);
                     }
                     this.CurrentDepth--;
+                    processedActions++;
+                    this.TotalActionCombinationsProcessed++;
                     continue;
                 }
 

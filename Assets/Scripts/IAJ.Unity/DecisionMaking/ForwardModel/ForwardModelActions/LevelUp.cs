@@ -1,6 +1,7 @@
 ﻿using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel;
 using Assets.Scripts.Game;
+using System;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActions
 {
@@ -25,7 +26,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
         public override bool CanExecute(WorldModel worldModel)
         {
-            int xp = (int)worldModel.GetProperty(Properties.XP);
+            int xp = Convert.ToInt32(worldModel.GetProperty(Properties.XP));
             int level = (int)worldModel.GetProperty(Properties.LEVEL);
 
             return xp >= level * 10;

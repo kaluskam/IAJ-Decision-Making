@@ -1,5 +1,7 @@
 using Assets.Scripts.Game;
+using Assets.Scripts.Game.NPCs;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel;
+using System;
 using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActions
@@ -35,6 +37,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         public override bool CanExecute(WorldModel worldModel)
         {
             if (!base.CanExecute(worldModel)) return false;
+            if (this.Target == null) return false;
             return (int)worldModel.GetProperty(Properties.MANA) >= 2;
         }
 
@@ -60,11 +63,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         {
             base.ApplyActionEffects(worldModel);
             var mana = (int)worldModel.GetProperty(Properties.MANA);
-            var xp = 0;
-            if (worldModel.GetProperty(Properties.XP) != null)
-            {
-                xp = (int)worldModel.GetProperty(Properties.XP);
-            }
+            var xp = Convert.ToInt32(worldModel.GetProperty(Properties.XP));
 
             worldModel.SetProperty(Properties.MANA, mana - 2);
             worldModel.SetProperty(Properties.XP, xp + this.XPChange);

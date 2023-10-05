@@ -75,10 +75,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
             int hp = (int)worldModel.GetProperty(Properties.HP);
             int shieldHp = (int)worldModel.GetProperty(Properties.ShieldHP);
-            int xp = 0;
-
-            //TODO - discuss it with professor
-            if (worldModel.GetProperty(Properties.XP) != null) xp = (int)worldModel.GetProperty(Properties.XP);
+            var xpObj = worldModel.GetProperty(Properties.XP);
+            int xp = Convert.ToInt32(xpObj);
 
             int damage = 0;
             if (GameManager.Instance.StochasticWorld)
