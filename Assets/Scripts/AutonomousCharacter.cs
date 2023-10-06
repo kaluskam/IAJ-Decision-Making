@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using UnityEngine.AI;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
+using Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActions;
 using Assets.Scripts.Game;
 using Assets.Scripts.Game.NPCs;
@@ -46,6 +47,7 @@ public class AutonomousCharacter : NPC
     [Header("Decision Algorithm Options")]
     public bool GOBActive;
     public bool GOAPActive;
+    public bool MCTSActive;
  
     [Header("Character Info")]
     public bool Resting = false;
@@ -61,6 +63,7 @@ public class AutonomousCharacter : NPC
     public Action CurrentAction { get; private set; }
     public GOBDecisionMaking GOBDecisionMaking { get; set; }
     public DepthLimitedGOAPDecisionMaking GOAPDecisionMaking { get; set; }
+    public MCTS MCTSDecisionMaking { get; set; }
 
     public GameObject nearEnemy { get; private set; }
 
@@ -104,23 +107,26 @@ public class AutonomousCharacter : NPC
         //initialization of the GOB decision making
         //let's start by creating 4 main goals
 
-        this.SurviveGoal = new Goal(SURVIVE_GOAL, 2f);
-
-        this.GainLevelGoal = new Goal(GAIN_LEVEL_GOAL, 3.0f)
+        this.SurviveGoal = new Goal(SURVIVE_GOAL, 4f)
+        {
+            
+        };
+            
+        this.GainLevelGoal = new Goal(GAIN_LEVEL_GOAL, 2f)
         {
             InsistenceValue = 10.0f,
             ChangeRate = 0.2f
         };
 
-        this.GetRichGoal = new Goal(GET_RICH_GOAL, 1f)
+        this.GetRichGoal = new Goal(GET_RICH_GOAL, 2f)
         {
             InsistenceValue = 5.0f,
             ChangeRate = 0.2f
         };
 
-        this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 2.0f)
+        this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 10f)
         {
-            ChangeRate = 1f
+            ChangeRate = 1f,
         };
 
         this.Goals = new List<Goal>
@@ -186,6 +192,10 @@ public class AutonomousCharacter : NPC
                 // the worldModel is necessary for the GOAP and MCTS algorithms that need to predict action effects on the world...
                 var worldModel = new CurrentStateWorldModel(GameManager.Instance, this.Actions, this.Goals);
                 this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel, this.Actions, this.Goals);
+            } else if (this.MCTSActive)
+            {
+                var worldModel = new CurrentStateWorldModel(GameManager.Instance, this.Actions, this.Goals);
+                this.MCTSDecisionMaking = new MCTS(worldModel);
             }
         }
 
@@ -261,6 +271,10 @@ public class AutonomousCharacter : NPC
             else if (GOAPActive)  //Add here other Algorithms...
             {
                 this.GOAPDecisionMaking.InitializeDecisionMakingProcess();
+            } 
+            else if (MCTSActive)
+            {
+                this.MCTSDecisionMaking.InitializeMCTSearch();
             }
         }
 
@@ -300,6 +314,10 @@ public class AutonomousCharacter : NPC
         else if (this.GOBActive)
         {
             this.UpdateGOB();
+        } 
+        else if (this.MCTSActive)
+        {
+            this.UpdateMCTS();
         }
 
         if (this.CurrentAction != null)
@@ -418,11 +436,11 @@ public class AutonomousCharacter : NPC
         }
     }
 
-/*    private void UpdateMCTS()
+    private void UpdateMCTS()
     {
         if (this.MCTSDecisionMaking.InProgress)
         {
-            var action = this.MCTSDecisionMaking.Run();
+            var action = this.MCTSDecisionMaking.ChooseAction();
             if (action != null)
             {
                 this.CurrentAction = action;
@@ -446,7 +464,7 @@ public class AutonomousCharacter : NPC
             this.BestActionSequence.text = "Best Action Sequence: " + actionText;
 
             //Debug: What is the predicted state of the world?
-            var endState = MCTSDecisionMaking.BestActionSequenceWorldState;
+            var endState = MCTSDecisionMaking.BestActionSequenceEndState;
             var text = "";
             if (endState != null)
             {
@@ -464,7 +482,7 @@ public class AutonomousCharacter : NPC
             this.BestActionSequence.text = "Best Action Sequence:\nNone";
             this.BestActionText.text = "";
         }
-    }*/
+    }
 
 
     void DrawPath()

@@ -79,7 +79,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.BehaviorTree.EnemyTasks
                 this.inChase = true;
                 this.myMonster.inShoutChase = false;
 
-                if (Vector3.Distance(orcPosition, playerPosition) <= 5f)
+                if (Vector3.Distance(orcPosition, playerPosition) < 2f)
                 { 
                 return Result.Success;
                 }
