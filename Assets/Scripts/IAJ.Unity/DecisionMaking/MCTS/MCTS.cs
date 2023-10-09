@@ -34,8 +34,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.InitialState = currentStateWorldModel;
-            this.MaxIterations = 1000;
-            this.MaxIterationsPerFrame = 100;
+            this.MaxIterations = 10;
+            this.MaxIterationsPerFrame = 10;
             this.RandomGenerator = new System.Random();
         }
 
@@ -64,7 +64,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         public Action ChooseAction()
         {
 
-            MCTSNode selectedNode = new MCTSNode(this.InitialState);
+            MCTSNode selectedNode = this.InitialNode;
             float reward;
 
             var startTime = Time.realtimeSinceStartup;
@@ -76,10 +76,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 Backpropagate(selectedNode, reward);
                 FrameCurrentIterations++;
             }
+            FrameCurrentIterations = 0;
 
-            MCTSNode rootNode = new MCTSNode(this.InitialState);
             // return best initial child
-            return BestAction(rootNode);
+            return BestAction(this.InitialNode);
         }
 
         // Selection and Expantion

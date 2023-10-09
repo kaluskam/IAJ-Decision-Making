@@ -107,24 +107,24 @@ public class AutonomousCharacter : NPC
         //initialization of the GOB decision making
         //let's start by creating 4 main goals
 
-        this.SurviveGoal = new Goal(SURVIVE_GOAL, 4f)
+        this.SurviveGoal = new Goal(SURVIVE_GOAL, 2f)
         {
             
         };
             
-        this.GainLevelGoal = new Goal(GAIN_LEVEL_GOAL, 2f)
+        this.GainLevelGoal = new Goal(GAIN_LEVEL_GOAL, 3f)
         {
             InsistenceValue = 10.0f,
             ChangeRate = 0.2f
         };
 
-        this.GetRichGoal = new Goal(GET_RICH_GOAL, 2f)
+        this.GetRichGoal = new Goal(GET_RICH_GOAL, 0.8f)
         {
             InsistenceValue = 5.0f,
             ChangeRate = 0.2f
         };
 
-        this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 10f)
+        this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 2.5f)
         {
             ChangeRate = 1f,
         };
@@ -177,7 +177,7 @@ public class AutonomousCharacter : NPC
         //Then we have a series of extra actions available to Sir Uthgard
         this.Actions.Add(new LevelUp(this));
         this.Actions.Add(new ShieldOfFaith(this));
-        this.Actions.Add(new Rest(this));
+        //this.Actions.Add(new Rest(this));
 
 
         // Initialization of Decision Making Algorithms
@@ -192,6 +192,7 @@ public class AutonomousCharacter : NPC
             } else if (this.MCTSActive)
             {
                 var worldModel = new CurrentStateWorldModel(GameManager.Instance, this.Actions, this.Goals);
+
                 this.MCTSDecisionMaking = new MCTS(worldModel);
             }
         }

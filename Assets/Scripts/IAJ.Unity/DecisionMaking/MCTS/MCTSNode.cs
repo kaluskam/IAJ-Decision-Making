@@ -24,7 +24,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         public float UCTScore()
         {
             var C = Mathf.Sqrt(2);
-            return Q / N + C * Mathf.Sqrt(Mathf.Log(this.Parent.N) / N);
+            var parentN = this.Parent != null ? this.Parent.N : 0;
+            return Q / N + C * Mathf.Sqrt(Mathf.Log(parentN) / N);
         }
     }
 }
