@@ -112,7 +112,7 @@ public class AutonomousCharacter : NPC
             
         };
             
-        this.GainLevelGoal = new Goal(GAIN_LEVEL_GOAL, 3f)
+        this.GainLevelGoal = new Goal(GAIN_LEVEL_GOAL, 2f)
         {
             InsistenceValue = 10.0f,
             ChangeRate = 0.2f

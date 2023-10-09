@@ -34,8 +34,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.InitialState = currentStateWorldModel;
-            this.MaxIterations = 10;
-            this.MaxIterationsPerFrame = 10;
+            this.MaxIterations = 1000;
+            this.MaxIterationsPerFrame = 100;
             this.RandomGenerator = new System.Random();
         }
 
@@ -69,16 +69,19 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
             var startTime = Time.realtimeSinceStartup;
 
-            while (FrameCurrentIterations < MaxIterationsPerFrame)
+            while (FrameCurrentIterations < MaxIterationsPerFrame && CurrentIterations < MaxIterations)
             {
                 selectedNode = Selection(selectedNode);
                 reward = Playout(selectedNode.State);
                 Backpropagate(selectedNode, reward);
                 FrameCurrentIterations++;
+                CurrentIterations++;
             }
             FrameCurrentIterations = 0;
+            InProgress = false;
 
             // return best initial child
+            this.TotalProcessingTime = Time.realtimeSinceStartup - startTime;
             return BestAction(this.InitialNode);
         }
 
@@ -89,8 +92,9 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             MCTSNode currentNode = initialNode;
             //Whats for
             MCTSNode bestChild;
-
-            while (!currentNode.State.IsTerminal())
+            var currentDepth = 0;
+            
+            while (!currentNode.State.IsTerminal() && currentDepth <= 3)
             {
                 nextAction = currentNode.State.GetNextAction();
                 if (nextAction != null)
@@ -100,10 +104,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 else
                 {   
                     currentNode = BestUCTChild(currentNode);
+                    currentDepth++;
                 }
-                
             }
-
+            this.MaxSelectionDepthReached = Mathf.Max(this.MaxSelectionDepthReached, currentDepth);
             return currentNode;
         }
 
@@ -111,13 +115,17 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             Action[] executableActions = initialStateForPlayout.GetExecutableActions();
             var currentState = initialStateForPlayout.GenerateChildWorldModel();
+            var currentDepth = 0;
             while (!currentState.IsTerminal())
             {
                 System.Random random = new System.Random();
                 var idx = random.Next(0, executableActions.Length);
                 var action = executableActions[idx];
                 action.ApplyActionEffects(currentState);
+                currentDepth++;
             }
+            this.MaxPlayoutDepthReached = Mathf.Max(this.MaxPlayoutDepthReached, currentDepth);
+
 
             //ToDo - ask if its okay (reward)
             return currentState.GetScore();
@@ -142,6 +150,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             var Child = new MCTSNode(newState);
             Child.Action = action;
             parent.ChildNodes.Add(Child);
+            Child.Parent = parent;
 
             
             return Child;
@@ -166,10 +175,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         //this method is very similar to the bestUCTChild, but it is used to return the final action of the MCTS search, and so we do not care about
         //the exploration factor
         protected MCTSNode BestChild(MCTSNode node)
-        {   
-            if(node.ChildNodes.Count == 0)
+        {
+            Debug.Log("BEST_CHILD START TIME: " + Time.realtimeSinceStartup);
+            if (node.ChildNodes.Count == 0)
             {
-                return node;
+                return null;
             }
             MCTSNode bestChild = node.ChildNodes[0];
             float bestScore = node.Q / node.N;
@@ -182,6 +192,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                     bestScore = score;
                 }
             }
+
+            Debug.Log("BEST_CHILD END TIME: " + Time.realtimeSinceStartup);
             return bestChild;
         }
 
