@@ -125,7 +125,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             {
                 return base.GetHValue(worldModel)/1.5f;
             }
-            return 10.0f;
+            return 100.0f;
         }
     }
 }

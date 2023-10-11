@@ -78,7 +78,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         public override float GetHValue(WorldModel worldModel)
         {
             //TODO
-            return 0;
+            return base.GetHValue(worldModel);
         }
     }
 }

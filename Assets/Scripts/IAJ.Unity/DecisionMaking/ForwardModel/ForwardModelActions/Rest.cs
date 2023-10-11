@@ -39,7 +39,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
             if (goal.Name == AutonomousCharacter.SURVIVE_GOAL)
             {
-                change -= this.HPChange;
+                //change -= this.HPChange * 0.1f;
+            } 
+            else if (goal.Name == AutonomousCharacter.BE_QUICK_GOAL)
+            {
+                change += 50;
             }
 
             return change;
@@ -52,14 +56,20 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             var hpChangeWorldModel = Mathf.Max((int)worldModel.GetProperty(Properties.MAXHP) - hp, 2);
             worldModel.SetProperty(Properties.ShieldHP, hpChangeWorldModel + hp);
 
+            var time = System.Convert.ToInt32(worldModel.GetProperty(Properties.TIME));
+            worldModel.SetProperty(Properties.TIME, time + 5);
+
             var goalValue = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
             worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, goalValue - hpChangeWorldModel);
+
+            var beQuickGoal = worldModel.GetGoalValue(AutonomousCharacter.BE_QUICK_GOAL);
+            worldModel.SetGoalValue(AutonomousCharacter.BE_QUICK_GOAL, beQuickGoal + 5);
         }
 
         public override float GetHValue(WorldModel worldModel)
         {
             //TODO
-            return 0;
+            return base.GetHValue(worldModel);
         }
     }
 }

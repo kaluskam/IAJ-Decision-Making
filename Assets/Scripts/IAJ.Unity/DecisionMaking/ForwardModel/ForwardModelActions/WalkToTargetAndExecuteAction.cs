@@ -2,6 +2,7 @@
 using Assets.Scripts.IAJ.Unity.DecisionMaking.GOB;
 using UnityEngine;
 using Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel;
+using System;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActions
 {
@@ -73,7 +74,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             var quicknessValue = worldModel.GetGoalValue(AutonomousCharacter.BE_QUICK_GOAL);
             worldModel.SetGoalValue(AutonomousCharacter.BE_QUICK_GOAL, quicknessValue + duration * 0.1f);
 
-            var time = (float)worldModel.GetProperty(Properties.TIME);
+            var time = Convert.ToInt32(worldModel.GetProperty(Properties.TIME));
             worldModel.SetProperty(Properties.TIME, time + duration);
 
             worldModel.SetProperty(Properties.POSITION, Target.transform.position);
@@ -83,6 +84,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         {        
             var distance = this.Character.GetDistanceToTarget(currentPosition, targetPosition);
             return distance;
+        }
+
+        public override float GetHValue(WorldModel worldModel)
+        {
+            var duration = this.GetDuration(worldModel);
+            return base.GetHValue(worldModel) + duration * 20;
         }
     }
 }

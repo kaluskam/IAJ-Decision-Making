@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Action = Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.Action;
 using System.Net.WebSockets;
+using System.Linq;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 {
@@ -15,12 +16,15 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         public bool InProgress { get; private set; }
         public int MaxIterations { get; set; }
         public int MaxIterationsPerFrame { get; set; }
-        public int MaxPlayoutDepthReached { get; private set; }
+        public int MaxPlayoutDepthReached { get; protected set; }
         public int MaxSelectionDepthReached { get; private set; }
         public float TotalProcessingTime { get; private set; }
         public MCTSNode BestFirstChild { get; set; }
         public List<Action> BestActionSequence { get; private set; }
         public WorldModel BestActionSequenceEndState { get; private set; }
+        public int NumberOfPlayouts { get; set; }
+        public int DepthLimit { get; set; }
+        public bool LimitedDepth { get; set; }
         protected int CurrentIterations { get; set; }
         protected int CurrentDepth { get; set; }
         protected int FrameCurrentIterations { get; set; }
@@ -28,14 +32,15 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         protected MCTSNode InitialNode { get; set; }
         protected System.Random RandomGenerator { get; set; }
         
+
         
 
         public MCTS(CurrentStateWorldModel currentStateWorldModel)
         {
             this.InProgress = false;
             this.InitialState = currentStateWorldModel;
-            this.MaxIterations = 1000;
-            this.MaxIterationsPerFrame = 100;
+            this.MaxIterations = 4000;
+            this.MaxIterationsPerFrame = 500;
             this.RandomGenerator = new System.Random();
         }
 
@@ -64,14 +69,19 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         public Action ChooseAction()
         {
 
-            MCTSNode selectedNode = this.InitialNode;
+            MCTSNode selectedNode;
             float reward;
 
             var startTime = Time.realtimeSinceStartup;
 
-            while (FrameCurrentIterations < MaxIterationsPerFrame && CurrentIterations < MaxIterations)
+            while (CurrentIterations < MaxIterations)
             {
-                selectedNode = Selection(selectedNode);
+                if (FrameCurrentIterations >= MaxIterationsPerFrame) 
+                {
+                    FrameCurrentIterations = 0;
+                    return null;
+                }
+                selectedNode = Selection(this.InitialNode);
                 reward = Playout(selectedNode.State);
                 Backpropagate(selectedNode, reward);
                 FrameCurrentIterations++;
@@ -113,22 +123,29 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
         protected virtual float Playout(WorldModel initialStateForPlayout)
         {
-            Action[] executableActions = initialStateForPlayout.GetExecutableActions();
-            var currentState = initialStateForPlayout.GenerateChildWorldModel();
-            var currentDepth = 0;
-            while (!currentState.IsTerminal())
+            var scores = new List<float>();
+
+            for (int i = 0; i < NumberOfPlayouts; i++)
             {
-                System.Random random = new System.Random();
-                var idx = random.Next(0, executableActions.Length);
-                var action = executableActions[idx];
-                action.ApplyActionEffects(currentState);
-                currentDepth++;
+                var currentState = initialStateForPlayout.GenerateChildWorldModel();
+                var currentDepth = 0;
+
+                while (!currentState.IsTerminal())
+                {
+                    Action[] executableActions = currentState.GetExecutableActions();
+
+                    var idx = RandomGenerator.Next(0, executableActions.Length);
+                    var action = executableActions[idx];
+                    action.ApplyActionEffects(currentState);
+                    currentDepth++;
+                }
+                this.MaxPlayoutDepthReached = Mathf.Max(this.MaxPlayoutDepthReached, currentDepth);
+                scores.Add(currentState.GetScore());
             }
-            this.MaxPlayoutDepthReached = Mathf.Max(this.MaxPlayoutDepthReached, currentDepth);
 
 
             //ToDo - ask if its okay (reward)
-            return currentState.GetScore();
+            return scores.Average();
         }
 
         protected virtual void Backpropagate(MCTSNode node, float reward)

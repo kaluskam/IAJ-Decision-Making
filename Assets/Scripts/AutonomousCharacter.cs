@@ -9,6 +9,7 @@ using Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActions;
 using Assets.Scripts.Game;
 using Assets.Scripts.Game.NPCs;
 using Assets.Scripts.IAJ.Unity.Utils;
+using Assets.Scripts.IAJ.Unity;
 //using System;
 
 public class AutonomousCharacter : NPC
@@ -19,7 +20,7 @@ public class AutonomousCharacter : NPC
     public const string BE_QUICK_GOAL = "BeQuick";
     public const string GET_RICH_GOAL = "GetRich";
 
-    public const float DECISION_MAKING_INTERVAL = 20.0f;
+    public const float DECISION_MAKING_INTERVAL = 40f;
     public const float RESTING_INTERVAL = 5.0f;
     public const float LEVELING_INTERVAL = 10.0f;
     public const float ENEMY_NEAR_CHECK_INTERVAL = 0.5f;
@@ -48,6 +49,9 @@ public class AutonomousCharacter : NPC
     public bool GOBActive;
     public bool GOAPActive;
     public bool MCTSActive;
+    public bool MCTSBiasedPlayoutActive;
+    public bool MCTSWithLimitedDepth;
+    public int MCTSNumberOfPlayouts;
  
     [Header("Character Info")]
     public bool Resting = false;
@@ -112,7 +116,7 @@ public class AutonomousCharacter : NPC
             
         };
             
-        this.GainLevelGoal = new Goal(GAIN_LEVEL_GOAL, 2f)
+        this.GainLevelGoal = new Goal(GAIN_LEVEL_GOAL, 3f)
         {
             InsistenceValue = 10.0f,
             ChangeRate = 0.2f
@@ -177,7 +181,8 @@ public class AutonomousCharacter : NPC
         //Then we have a series of extra actions available to Sir Uthgard
         this.Actions.Add(new LevelUp(this));
         this.Actions.Add(new ShieldOfFaith(this));
-        //this.Actions.Add(new Rest(this));
+        this.Actions.Add(new Rest(this));
+        this.Actions.Add(new Teleport(this));
 
 
         // Initialization of Decision Making Algorithms
@@ -193,7 +198,15 @@ public class AutonomousCharacter : NPC
             {
                 var worldModel = new CurrentStateWorldModel(GameManager.Instance, this.Actions, this.Goals);
 
-                this.MCTSDecisionMaking = new MCTS(worldModel);
+                if (this.MCTSBiasedPlayoutActive)
+                {
+                    this.MCTSDecisionMaking = new MCTSBiasedPlayout(worldModel);
+                } else
+                {
+                    this.MCTSDecisionMaking = new MCTS(worldModel);
+                }
+                this.MCTSDecisionMaking.LimitedDepth = this.MCTSWithLimitedDepth;
+                this.MCTSDecisionMaking.NumberOfPlayouts = this.MCTSNumberOfPlayouts; 
             }
         }
 

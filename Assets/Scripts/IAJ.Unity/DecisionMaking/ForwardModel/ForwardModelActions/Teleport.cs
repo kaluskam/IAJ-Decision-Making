@@ -4,28 +4,26 @@ using UnityEngine;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActions
 {
-    public class ShieldOfFaith : Action
+    public class Teleport : Action
     {
-
-        private float ShieldHPChange;
         private AutonomousCharacter Character;
-        public ShieldOfFaith(AutonomousCharacter character) : base("ShieldOfFaith")
+        private Vector3 initialPosition = new Vector3 (50, 0, 53.67f);
+        public Teleport(AutonomousCharacter character) : base("Teleport")
         {
             this.Character = character;
-            this.ShieldHPChange = 5 - Character.baseStats.ShieldHP;
         }
 
         public override bool CanExecute()
         {
             if (!base.CanExecute()) return false;
-            return Character.baseStats.Mana >= 5;
+            return Character.baseStats.Mana >= 5 && Character.baseStats.Level >= 2;
         }
 
         public override bool CanExecute(WorldModel worldModel)
         {
             if (!base.CanExecute(worldModel)) return false;
-            
-            return (int)worldModel.GetProperty(Properties.MANA) >= 5;
+
+            return (int)worldModel.GetProperty(Properties.MANA) >= 5 && (int)worldModel.GetProperty(Properties.LEVEL) >= 2;
         }
 
         public override void Execute()
@@ -38,32 +36,22 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         {
             var change = base.GetGoalChange(goal);
 
-            if (goal.Name == AutonomousCharacter.SURVIVE_GOAL)
-            {
-                change -= this.ShieldHPChange;
-            }            
-
             return change;
         }
 
         public override void ApplyActionEffects(WorldModel worldModel)
         {
             base.ApplyActionEffects(worldModel);
-            var shieldHP = (int)worldModel.GetProperty(Properties.ShieldHP);
-            var shieldHPChange = 5 - shieldHP;
-            worldModel.SetProperty(Properties.ShieldHP, 5);
-
             var mana = (int)worldModel.GetProperty(Properties.MANA);
             worldModel.SetProperty(Properties.MANA, mana - 5);
 
-            var goalValue = worldModel.GetGoalValue(AutonomousCharacter.SURVIVE_GOAL);
-            worldModel.SetGoalValue(AutonomousCharacter.SURVIVE_GOAL, goalValue - shieldHPChange);
+            worldModel.SetProperty(Properties.POSITION, initialPosition);
         }
 
         public override float GetHValue(WorldModel worldModel)
         {
             //TODO
-            return base.GetHValue(worldModel);
+            return 0;
         }
     }
 }

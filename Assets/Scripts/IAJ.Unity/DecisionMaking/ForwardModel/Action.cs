@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Assets.Scripts.Game;
+using System;
+using System.Collections.Generic;
 
 namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
 {
@@ -67,7 +69,17 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
         // Used for MCTS Biased
         public virtual float GetHValue(WorldModel worldModel)
         {
-            return 0.0f;
+            var MAX_HP = Convert.ToInt32(worldModel.GetProperty(Properties.MAXHP));
+            var HP = Convert.ToInt32(worldModel.GetProperty(Properties.HP));
+
+            var money = Convert.ToInt32(worldModel.GetProperty(Properties.MONEY));
+            var time = Convert.ToInt32(worldModel.GetProperty(Properties.TIME));
+
+            if (HP <= 0)
+            {
+                return 100;
+            }
+            return - HP - money;
         }
 
     }
