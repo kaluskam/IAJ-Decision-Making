@@ -89,7 +89,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         public override float GetHValue(WorldModel worldModel)
         {
             var duration = this.GetDuration(worldModel);
-            return base.GetHValue(worldModel) + duration * 20;
+            return base.GetHValue(worldModel, duration);
         }
     }
 }

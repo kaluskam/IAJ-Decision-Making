@@ -39,7 +39,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.InitialState = currentStateWorldModel;
-            this.MaxIterations = 4000;
+            this.MaxIterations = 3000;
             this.MaxIterationsPerFrame = 500;
             this.RandomGenerator = new System.Random();
         }
@@ -136,15 +136,17 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
 
                     var idx = RandomGenerator.Next(0, executableActions.Length);
                     var action = executableActions[idx];
-                    action.ApplyActionEffects(currentState);
+                    //action.ApplyActionEffects(currentState);
+                    WorldModel newState = currentState.GenerateChildWorldModel();
+                    action.ApplyActionEffects(newState);
+                    newState.CalculateNextPlayer();
+                    currentState = newState;
                     currentDepth++;
                 }
                 this.MaxPlayoutDepthReached = Mathf.Max(this.MaxPlayoutDepthReached, currentDepth);
                 scores.Add(currentState.GetScore());
             }
 
-
-            //ToDo - ask if its okay (reward)
             return scores.Average();
         }
 
@@ -168,7 +170,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             Child.Action = action;
             parent.ChildNodes.Add(Child);
             Child.Parent = parent;
-
             
             return Child;
         }
@@ -193,7 +194,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         //the exploration factor
         protected MCTSNode BestChild(MCTSNode node)
         {
-            Debug.Log("BEST_CHILD START TIME: " + Time.realtimeSinceStartup);
             if (node.ChildNodes.Count == 0)
             {
                 return null;
@@ -210,7 +210,6 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
                 }
             }
 
-            Debug.Log("BEST_CHILD END TIME: " + Time.realtimeSinceStartup);
             return bestChild;
         }
 

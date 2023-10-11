@@ -75,11 +75,38 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel
             var money = Convert.ToInt32(worldModel.GetProperty(Properties.MONEY));
             var time = Convert.ToInt32(worldModel.GetProperty(Properties.TIME));
 
-            if (HP <= 0)
+            if (HP <= 0 || time >= 150)
             {
-                return 100;
+                return 1000;
             }
-            return - HP - money;
+            if (HP > 0 && time < 150 && money == 25)
+            {
+                return -1000;
+            }
+            return - HP / MAX_HP - money / 25;
+        }
+        public static float GetHValueFinal(WorldModel worldModel)
+        {
+            var MAX_HP = Convert.ToInt32(worldModel.GetProperty(Properties.MAXHP));
+            var HP = Convert.ToInt32(worldModel.GetProperty(Properties.HP));
+
+            var money = Convert.ToInt32(worldModel.GetProperty(Properties.MONEY));
+            var time = Convert.ToInt32(worldModel.GetProperty(Properties.TIME));
+
+            if (HP <= 0 || time >= 150)
+            {
+                return 1000;
+            }
+            if (HP > 0 && time < 150 && money == 25)
+            {
+                return -1000;
+            }
+            return -HP / MAX_HP - money / 25;
+        }
+
+        public virtual float GetHValue(WorldModel worldModel, float duration)
+        {
+            return Action.GetHValueFinal(worldModel) + duration / 150;
         }
 
     }

@@ -13,7 +13,7 @@ namespace Assets.Scripts.IAJ.Unity
 
         public MCTSBiasedPlayout(CurrentStateWorldModel currentStateWorldModel) : base(currentStateWorldModel)
         {
-            this.MaxPlayoutDepthConstraint = 10;
+            this.MaxPlayoutDepthConstraint = 6;
         }
 
         protected override float Playout(WorldModel initialStateForPlayout)
@@ -35,8 +35,12 @@ namespace Assets.Scripts.IAJ.Unity
                     Action[] executableActions = currentState.GetExecutableActions();
 
                     var action = ChooseBestHAction(executableActions, currentState);
-                    action.ApplyActionEffects(currentState);                  
-                   
+                    //action.ApplyActionEffects(currentState);
+                    WorldModel newState = currentState.GenerateChildWorldModel();
+                    action.ApplyActionEffects(newState);
+                    newState.CalculateNextPlayer();
+                    currentState = newState;
+
                     currentDepth++;
                 }
                 this.MaxPlayoutDepthReached = Mathf.Max(this.MaxPlayoutDepthReached, currentDepth);

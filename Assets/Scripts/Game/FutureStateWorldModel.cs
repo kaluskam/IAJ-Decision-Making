@@ -31,7 +31,7 @@ namespace Assets.Scripts.Game
         public override bool IsTerminal()
         {
             int HP = (int)this.GetProperty(Properties.HP);
-            float time = (float)this.GetProperty(Properties.TIME);
+            float time = ((float) System.Convert.ToDouble(this.GetProperty(Properties.TIME)));
             int money = (int)this.GetProperty(Properties.MONEY);
 
             return HP <= 0 ||  time >= GameManager.GameConstants.TIME_LIMIT || (this.NextPlayer == 0 && money == 25);
@@ -41,7 +41,7 @@ namespace Assets.Scripts.Game
         {
             int money = (int)this.GetProperty(Properties.MONEY);
             int HP = (int)this.GetProperty(Properties.HP);
-            float time = (float)this.GetProperty(Properties.TIME);
+            float time = (float) System.Convert.ToDouble(this.GetProperty(Properties.TIME));
 
             // TODO : Should Time and other factors be taken into accoun?
 

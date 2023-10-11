@@ -8,6 +8,8 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
     {
         private AutonomousCharacter Character { get; set; }
         private int HPChange { get; set; }
+
+        private static int REST_DURATION = 5;
         public Rest(AutonomousCharacter character) : base("Rest")
         {
             this.Character = character;
@@ -69,7 +71,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         public override float GetHValue(WorldModel worldModel)
         {
             //TODO
-            return base.GetHValue(worldModel);
+            return base.GetHValue(worldModel, REST_DURATION * 2);
         }
     }
 }

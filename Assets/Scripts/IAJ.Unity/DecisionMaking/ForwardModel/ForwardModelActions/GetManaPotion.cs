@@ -45,6 +45,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
             worldModel.SetProperty(this.Target.name, false);
         }
 
-       
+        public override float GetHValue(WorldModel worldModel)
+        {
+            return base.GetHValue(worldModel);
+        }
+
+
     }
 }

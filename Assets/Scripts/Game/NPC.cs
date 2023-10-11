@@ -90,7 +90,7 @@ namespace Assets.Scripts.Game
 
         //public float GetDistanceToTarget(Vector3 originalPosition, Vector3 targetPosition)
         //{
-        //    return Vector3.Distance(originalPosition, targetPosition);
+        //    return Vector3.Distance(originalPosition, targetPosition) * 2.5f;
 
         //}
 

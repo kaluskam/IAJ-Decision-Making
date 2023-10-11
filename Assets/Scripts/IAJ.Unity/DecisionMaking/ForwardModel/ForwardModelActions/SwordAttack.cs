@@ -119,13 +119,13 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
         public override float GetHValue(WorldModel worldModel)
         {
-            var hp = (int)worldModel.GetProperty(Properties.HP);
+            //var hp = (int)worldModel.GetProperty(Properties.HP);
             
-            if (hp > this.expectedHPChange)
-            {
-                return base.GetHValue(worldModel)/1.5f;
-            }
-            return 100.0f;
+            //if (hp > this.expectedHPChange)
+            //{
+            //    return base.GetHValue(worldModel)/1.5f;
+            //}
+            return base.GetHValue(worldModel);
         }
     }
 }

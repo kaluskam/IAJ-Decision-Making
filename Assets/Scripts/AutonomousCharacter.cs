@@ -10,7 +10,6 @@ using Assets.Scripts.Game;
 using Assets.Scripts.Game.NPCs;
 using Assets.Scripts.IAJ.Unity.Utils;
 using Assets.Scripts.IAJ.Unity;
-//using System;
 
 public class AutonomousCharacter : NPC
 {
@@ -107,6 +106,24 @@ public class AutonomousCharacter : NPC
 
         nearEnemy = null;
 
+        //var c0 = new Vector3(74.07407f, -9.362079e-16f, 96.32972f);
+        //var c1 = new Vector3(57.40741f, -8.943463e-16f, 94.44444f);
+        //var c2 = new Vector3(81.48148f, -6.065108e-16f, 81.48148f);
+        //var c3 = new Vector3(25.92593f, 2.981156e-16f, 40.74074f);
+        //var c4 = new Vector3(11.11111f, 7.504286e-16f, 20.37037f);
+        //var chestArray = new Vector3[5];
+        //chestArray[0] = (c0);
+        //chestArray[1] = (c1);
+        //chestArray[2] = (c2);
+        //chestArray[3] = (c3);
+        //chestArray[4] = (c4);
+        //foreach (var c in chestArray)
+        //{
+        //    foreach (var cx in chestArray)
+        //    {
+        //       Debug.Log("C" + System.Array.IndexOf(chestArray, c).ToString() + " to " + "C" + System.Array.IndexOf(chestArray, cx).ToString() + ": " + GetDistanceToTarget(c, cx).ToString());
+        //    }
+        //}
 
         //initialization of the GOB decision making
         //let's start by creating 4 main goals
@@ -122,13 +139,13 @@ public class AutonomousCharacter : NPC
             ChangeRate = 0.2f
         };
 
-        this.GetRichGoal = new Goal(GET_RICH_GOAL, 0.8f)
+        this.GetRichGoal = new Goal(GET_RICH_GOAL, 1f)
         {
             InsistenceValue = 5.0f,
             ChangeRate = 0.2f
         };
 
-        this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 2.5f)
+        this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 2f)
         {
             ChangeRate = 1f,
         };
