@@ -41,14 +41,18 @@ namespace Assets.Scripts.Game
         {
             int money = (int)this.GetProperty(Properties.MONEY);
             int HP = (int)this.GetProperty(Properties.HP);
+            int MAX_HP = (int)this.GetProperty(Properties.MAXHP);
             float time = (float) System.Convert.ToDouble(this.GetProperty(Properties.TIME));
 
             // TODO : Should Time and other factors be taken into accoun?
-
-            if (HP <= 0) return 0.0f;
+            
+            if (HP <= 0 || time > 150) return 0.0f;
             else if (money == 25 && time <= 150)
             {
                 return 1.0f;
+            } else if (!this.IsTerminal())
+            {
+                return (HP / MAX_HP + money / 25 - time / 150 + 1) / 2;
             }
             else return 0.0f;
         }
