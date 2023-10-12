@@ -20,8 +20,8 @@ namespace Assets.Scripts.Game.NPCs
             this.baseStats.HP = 30;
             this.DmgRoll = () => RandomHelper.RollD12() + RandomHelper.RollD12()+3;
             this.enemyStats.SimpleDamage = 15;
-            this.enemyStats.AwakeDistance = 20;
-            this.enemyStats.WeaponRange = 15;
+            this.enemyStats.AwakeDistance = 15;
+            this.enemyStats.WeaponRange = 7;
         }
 
         public override void InitializeBehaviourTree()

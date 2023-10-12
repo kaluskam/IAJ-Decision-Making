@@ -39,7 +39,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
         {
             this.InProgress = false;
             this.InitialState = currentStateWorldModel;
-            this.MaxIterations = 3000;
+            this.MaxIterations = 5000;
             this.MaxIterationsPerFrame = 500;
             this.RandomGenerator = new System.Random();
         }
@@ -202,6 +202,10 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.MCTS
             float bestScore = node.Q / node.N;
             foreach (var child in node.ChildNodes)
             {
+                //if (child.Action.Name == "LevelUp")
+                //{
+                //    return child;
+                //}
                 var score = child.Q / child.N;
                 if (score > bestScore)
                 {

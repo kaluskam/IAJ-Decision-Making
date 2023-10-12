@@ -65,36 +65,32 @@ namespace Assets.Scripts.Game
             navMeshAgent.isStopped = true;
         }
 
-        // Simple way of calculating distance left to target using Unity's navmesh
+        //Simple way of calculating distance left to target using Unity's navmesh
         public float GetDistanceToTarget(Vector3 originalPosition, Vector3 targetPosition)
+    {
+        var distance = 0.0f;
+
+        NavMeshPath result = new NavMeshPath();
+        var r = navMeshAgent.CalculatePath(targetPosition, result);
+        if (r == true)
         {
-            var distance = 0.0f;
-
-            NavMeshPath result = new NavMeshPath();
-            var r = navMeshAgent.CalculatePath(targetPosition, result);
-            if (r == true)
+            var currentPosition = originalPosition;
+            foreach (var c in result.corners)
             {
-                var currentPosition = originalPosition;
-                foreach (var c in result.corners)
-                {
-                    //Rough estimate, it does not account for shortcuts so we have to multiply it
-                    distance += Vector3.Distance(currentPosition, c) * 0.65f;
-                    currentPosition = c;
-                }
-                return distance;
+                //Rough estimate, it does not account for shortcuts so we have to multiply it
+                distance += Vector3.Distance(currentPosition, c) * 0.65f;
+                currentPosition = c;
             }
-
-            //Default value
-            return 100;
+            return distance;
         }
 
-        //public float GetDistanceToTarget(Vector3 originalPosition, Vector3 targetPosition)
-        //{
-        //    return Vector3.Distance(originalPosition, targetPosition) * 2.5f;
-
-        //}
-
-        #endregion
-
+        //Default value
+        return 100;
     }
+
+
+
+    #endregion
+
+}
 }

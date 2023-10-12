@@ -30,7 +30,7 @@ namespace Assets.Scripts.Game.NPCs
             this.baseStats.HP = 15;
             this.DmgRoll = () => RandomHelper.RollD10() + 2;
             this.enemyStats.SimpleDamage = 6;
-            this.enemyStats.AwakeDistance = 15;
+            this.enemyStats.AwakeDistance = 10;
             this.enemyStats.WeaponRange = 3;
             this.inShoutChase = false;
             this.inChase = false;  

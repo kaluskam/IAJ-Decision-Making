@@ -82,7 +82,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
         private float getDistance(Vector3 currentPosition, Vector3 targetPosition)
         {        
-            var distance = this.Character.GetDistanceToTarget(currentPosition, targetPosition);
+            var distance = GetDistanceToTarget(currentPosition, targetPosition);
             return distance;
         }
 
@@ -90,6 +90,12 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         {
             var duration = this.GetDuration(worldModel);
             return base.GetHValue(worldModel, duration);
+        }
+
+        public float GetDistanceToTarget(Vector3 originalPosition, Vector3 targetPosition)
+        {
+            return Vector3.Distance(originalPosition, targetPosition) * 2.5f;
+
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Assets.Scripts.IAJ.Unity
 
         public MCTSBiasedPlayout(CurrentStateWorldModel currentStateWorldModel) : base(currentStateWorldModel)
         {
-            this.MaxPlayoutDepthConstraint = 6;
+            this.MaxPlayoutDepthConstraint = 13;
         }
 
         protected override float Playout(WorldModel initialStateForPlayout)
