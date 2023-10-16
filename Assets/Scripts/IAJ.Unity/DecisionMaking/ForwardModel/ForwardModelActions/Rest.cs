@@ -41,11 +41,11 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
 
             if (goal.Name == AutonomousCharacter.SURVIVE_GOAL)
             {
-                //change -= this.HPChange * 0.1f;
+                change -= this.HPChange * 0.1f;
             } 
             else if (goal.Name == AutonomousCharacter.BE_QUICK_GOAL)
             {
-                change += 50;
+                change += 5;
             }
 
             return change;

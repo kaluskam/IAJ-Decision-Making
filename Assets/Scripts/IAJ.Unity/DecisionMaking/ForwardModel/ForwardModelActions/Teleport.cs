@@ -29,7 +29,7 @@ namespace Assets.Scripts.IAJ.Unity.DecisionMaking.ForwardModel.ForwardModelActio
         public override void Execute()
         {
             base.Execute();
-            GameManager.Instance.ShieldOfFaith();
+            GameManager.Instance.Teleport();
         }
 
         public override float GetGoalChange(Goal goal)

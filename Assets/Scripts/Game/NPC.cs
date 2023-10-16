@@ -22,7 +22,10 @@ namespace Assets.Scripts.Game
             public float Time;
             public int Money;
             public int Level;
-
+            public override string ToString()
+            {
+                return HP + "," + Mana + ", " + XP + "," + Time + "," + Money + "," + Level;
+            }
         }
 
         protected GameObject character;
@@ -88,9 +91,11 @@ namespace Assets.Scripts.Game
         return 100;
     }
 
+        
 
 
-    #endregion
 
-}
+        #endregion
+
+    }
 }

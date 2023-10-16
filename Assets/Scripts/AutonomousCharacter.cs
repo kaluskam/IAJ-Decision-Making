@@ -51,12 +51,14 @@ public class AutonomousCharacter : NPC
     public bool MCTSBiasedPlayoutActive;
     public bool MCTSWithLimitedDepth;
     public int MCTSNumberOfPlayouts;
+    public bool ChangeWhenEnemyNear = true;
  
     [Header("Character Info")]
     public bool Resting = false;
     public bool LevelingUp = false;
     public float StopTime;
 
+    public string AlgorithmName;
     public Goal BeQuickGoal { get; private set; }
     public Goal SurviveGoal { get; private set; }
     public Goal GetRichGoal { get; private set; }
@@ -128,7 +130,7 @@ public class AutonomousCharacter : NPC
         //initialization of the GOB decision making
         //let's start by creating 4 main goals
 
-        this.SurviveGoal = new Goal(SURVIVE_GOAL, 2f)
+        this.SurviveGoal = new Goal(SURVIVE_GOAL, 11f)
         {
             
         };
@@ -139,13 +141,13 @@ public class AutonomousCharacter : NPC
             ChangeRate = 0.2f
         };
 
-        this.GetRichGoal = new Goal(GET_RICH_GOAL, 1f)
+        this.GetRichGoal = new Goal(GET_RICH_GOAL, 4f)
         {
             InsistenceValue = 5.0f,
             ChangeRate = 0.2f
         };
 
-        this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 2f)
+        this.BeQuickGoal = new Goal(BE_QUICK_GOAL, 0f)
         {
             ChangeRate = 1f,
         };
@@ -204,26 +206,43 @@ public class AutonomousCharacter : NPC
 
         // Initialization of Decision Making Algorithms
         if (!this.controlledByPlayer)
-        { 
-            if (this.GOBActive) this.GOBDecisionMaking = new GOBDecisionMaking(this.Actions, this.Goals);
+        {
+            if (this.GOBActive)
+            {
+                this.GOBDecisionMaking = new GOBDecisionMaking(this.Actions, this.Goals);
+                this.AlgorithmName = "GOB" + " SG: " + this.SurviveGoal.Weight 
+                    + " GL: " + this.GainLevelGoal.Weight
+                    + " BQ: " + this.BeQuickGoal.Weight
+                    + " GR: " + this.GetRichGoal.Weight;
+
+            }
             else if (this.GOAPActive)
             {
                 // the worldModel is necessary for the GOAP and MCTS algorithms that need to predict action effects on the world...
                 var worldModel = new CurrentStateWorldModel(GameManager.Instance, this.Actions, this.Goals);
                 this.GOAPDecisionMaking = new DepthLimitedGOAPDecisionMaking(worldModel, this.Actions, this.Goals);
-            } else if (this.MCTSActive)
+                this.AlgorithmName = "GOAP" + " SG: " + this.SurviveGoal.Weight
+                    + " GL: " + this.GainLevelGoal.Weight
+                    + " BQ: " + this.BeQuickGoal.Weight
+                    + " GR: " + this.GetRichGoal.Weight;
+            }
+            else if (this.MCTSActive)
             {
                 var worldModel = new CurrentStateWorldModel(GameManager.Instance, this.Actions, this.Goals);
-
+                this.AlgorithmName = "MCTS";
                 if (this.MCTSBiasedPlayoutActive)
                 {
                     this.MCTSDecisionMaking = new MCTSBiasedPlayout(worldModel);
-                } else
+                    this.AlgorithmName += " Biased";
+                }
+                else
                 {
                     this.MCTSDecisionMaking = new MCTS(worldModel);
                 }
                 this.MCTSDecisionMaking.LimitedDepth = this.MCTSWithLimitedDepth;
-                this.MCTSDecisionMaking.NumberOfPlayouts = this.MCTSNumberOfPlayouts; 
+                this.MCTSDecisionMaking.NumberOfPlayouts = this.MCTSNumberOfPlayouts;
+                if (this.MCTSWithLimitedDepth) this.AlgorithmName += " Limited";
+                this.AlgorithmName += " P: " + this.MCTSNumberOfPlayouts + " Iter: " + this.MCTSDecisionMaking.MaxIterations;
             }
         }
 
@@ -240,7 +259,10 @@ public class AutonomousCharacter : NPC
             GameObject enemy = CheckEnemies(ENEMY_DETECTION_RADIUS);
             if (enemy != null)
             {
-                GameManager.Instance.WorldChanged = true;
+                if (this.ChangeWhenEnemyNear)
+                {
+                    GameManager.Instance.WorldChanged = true;
+                }
                 AddToDiary(" There is " + enemy.name + " in front of me!");
                 this.nearEnemy = enemy;
             }

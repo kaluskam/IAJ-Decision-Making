@@ -4,6 +4,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 using Assets.Scripts.Game.NPCs;
+using System.IO;
+using System.Text;
 
 public class GameManager : MonoBehaviour
 {
@@ -48,6 +50,7 @@ public class GameManager : MonoBehaviour
     private float enemyAttackCooldown = 0.0f;
     public bool gameEnded { get; set; } = false;
     public Vector3 initialPosition { get; set; }
+    private int gameWon;
 
     void Awake()
     {
@@ -136,12 +139,27 @@ public class GameManager : MonoBehaviour
                 this.GameEnd.SetActive(true);
                 this.gameEnded = true;
                 this.GameEnd.GetComponentInChildren<Text>().text = "You Died";
+                this.gameWon = 0;
             }
             else if (this.Character.baseStats.Money >= 25)
             {
                 this.GameEnd.SetActive(true);
                 this.gameEnded = true;
                 this.GameEnd.GetComponentInChildren<Text>().text = "Victory \n GG EZ";
+                this.gameWon = 1;
+            }
+            if (this.gameEnded)
+            {
+                var path = "./Assets/Results/results.txt";
+                if (!File.Exists(path))
+                {
+                    File.Create(path);
+                   // File.AppendAllText(path, "Algorithm,HP,Mana,XP,Time,Money,Level,Win,SleepingNPCs\n");
+                }
+                File.AppendAllText(path, Character.AlgorithmName + "," + Character.baseStats.ToString()
+                    + "," + this.gameWon 
+                    + "," + this.SleepingNPCs
+                    + "," + this.Character.ChangeWhenEnemyNear + "\n");
             }
         }
     }
